@@ -1,0 +1,46 @@
+<div *ngIf="_pollData" class="component-item" padding
+     [class.is-disabled]="_loading > 0"
+     (click)="_userCantVote && triggerUnitUnassignedPopup()"
+>
+  <ion-spinner name="circles" class="spinner" *ngIf="_loading > 0"></ion-spinner>
+
+  <!-- Voting component -->
+  <div *ngIf="!_showResults" [class.is-disabled]="_userCantVote">
+    <h4 class="poll-title bold">{{ _pollData.title}}</h4>
+    <div class="poll-option" *ngFor="let option of _pollData.options">
+      <div class="option-radio">
+        <ion-checkbox (click)="vote(option._id)" [checked]="_userVote === option._id"></ion-checkbox>
+      </div>
+      <div class="option-text">{{ option.text }}</div>
+    </div>
+  </div>
+
+  <!-- Results component -->
+  <div *ngIf="_showResults">
+    <h4 class="poll-title bold">{{ _pollData.title}}</h4>
+    <div class="" *ngFor="let option of _pollData.options">
+      <div class="progress">
+        <div class="bar" [class.active]="_userVote === option._id" [style.width.%]="_votes[option._id]/_totalVotes*100">
+        </div>
+        <div class="message">
+          <span>{{ option.text }}</span>
+          <span class="percentage">{{ _votes[option._id]/_totalVotes * 100 || 0 | number:'1.0-2' }}%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="vote-count">
+    <span>
+      {{ _totalVotes }} {{ (_totalVotes === 1 ? 'LABEL.VOTE' : 'LABEL.VOTES') | translate }}
+    </span>
+
+    <span class="ui-toggle" *ngIf="_isAdmin && !_hasVoted" (click)="toggleView()">
+      <span *ngIf="_showResults">{{ 'LABEL.SUBMIT_VOTE'|translate }}</span>
+      <span *ngIf="!_showResults">{{ 'LABEL.VIEW_RESULTS'|translate }}</span>
+    </span>
+
+    <span class="ui-toggle" *ngIf="_hasVoted && _isUsersVote">
+      <span (click)="unVote()">{{ 'LABEL.UNDO_VOTE' | translate }}</span>
+    </span>
+  </p>
+</div>
